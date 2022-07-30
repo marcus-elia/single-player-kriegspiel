@@ -2,16 +2,16 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/master/Unity.gitignore
 #
-/[Ll]ibrary/
-/[Tt]emp/
-/[Oo]bj/
-/[Bb]uild/
-/[Bb]uilds/
-/[Ll]ogs/
-/[Mm]emoryCaptures/
+/kriegspiel/[Ll]ibrary/
+/kriegspiel/[Tt]emp/
+/kriegspiel/[Oo]bj/
+/kriegspiel/[Bb]uild/
+/kriegspiel/[Bb]uilds/
+/kriegspiel/[Ll]ogs/
+/kriegspiel/[Mm]emoryCaptures/
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
-!/[Aa]ssets/**/*.meta
+!/kriegspiel/[Aa]ssets/**/*.meta
 
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # /[Aa]ssets/AssetStoreTools*
