@@ -8,7 +8,10 @@ public class BoardManager : MonoBehaviour
     private GameObject[,] spaces = new GameObject[CHESSBOARD_SIZE, CHESSBOARD_SIZE];
     public Texture2D blackSquareTex;
     public Texture2D whiteSquareTex;
-    public int x;
+    //public Texture2D whiteRookTex;
+    public Sprite whiteRookSprite;
+
+    private List<GameObject> pieces;
 
     // Start is called before the first frame update
     void Start()
@@ -23,6 +26,12 @@ public class BoardManager : MonoBehaviour
                 spaces[i, j].GetComponent<BoardSpace>().SetTexture((i + j) % 2 == 0 ? blackSquareTex : whiteSquareTex);
             }
         }
+
+        GameObject testRook = new GameObject();
+        testRook.AddComponent<Piece>();
+        testRook.GetComponent<Piece>().SetSprite(whiteRookSprite);
+        testRook.GetComponent<Piece>().SetBoardPosition(0, 0);
+        pieces.Add(testRook);
     }
 
     // Update is called once per frame

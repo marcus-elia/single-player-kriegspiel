@@ -7,8 +7,6 @@ public enum ColorType { White, Black };
 public class BoardSpace : MonoBehaviour
 {
     public static float SQUARE_WIDTH = 1f;
-    private ColorType colorType;
-    private Sprite squareSprite;
     private GameObject face;
 
 
