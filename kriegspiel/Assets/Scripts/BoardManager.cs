@@ -13,6 +13,16 @@ public class BoardManager : MonoBehaviour
 
     public Sprite whiteRookSprite;
     public Sprite blackRookSprite;
+    public Sprite whiteKingSprite;
+    public Sprite blackKingSprite;
+    public Sprite whiteQueenSprite;
+    public Sprite blackQueenSprite;
+    public Sprite whiteKnightSprite;
+    public Sprite blackKnightSprite;
+    public Sprite whiteBishopSprite;
+    public Sprite blackBishopSprite;
+    public Sprite whitePawnSprite;
+    public Sprite blackPawnSprite;
 
     private List<GameObject> playerPieces;
     private Piece[,] masterBoard = new Piece[CHESSBOARD_SIZE, CHESSBOARD_SIZE];

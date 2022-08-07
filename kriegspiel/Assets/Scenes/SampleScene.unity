@@ -238,6 +238,17 @@ MonoBehaviour:
   blackSquareTex: {fileID: 2800000, guid: d6f771e06f5c4404e87682d295950ad8, type: 3}
   whiteSquareTex: {fileID: 2800000, guid: 7a35bab2d87d91745ab7349718b74e08, type: 3}
   whiteRookSprite: {fileID: 21300000, guid: 58ba476a295d10e4fa443479a71f6ea4, type: 3}
+  blackRookSprite: {fileID: 21300000, guid: a041e5d6c0962c641bda5387e9728645, type: 3}
+  whiteKingSprite: {fileID: 21300000, guid: f7bdc3d644cdabf47a44583747b287de, type: 3}
+  blackKingSprite: {fileID: 21300000, guid: c18257de0d034994e9b2c750fa24db94, type: 3}
+  whiteQueenSprite: {fileID: 21300000, guid: d071eee532dbf0748b67a3762bfc3c63, type: 3}
+  blackQueenSprite: {fileID: 21300000, guid: f235ebf9ab7eb0d4f9b466d2c31877ee, type: 3}
+  whiteKnightSprite: {fileID: 21300000, guid: 87a71d5137624d34ab076c47617d275f, type: 3}
+  blackKnightSprite: {fileID: 21300000, guid: 8f7d325501297fd46b3b25ed1fa94f8f, type: 3}
+  whiteBishopSprite: {fileID: 21300000, guid: fa0392e8662e15245883e5e5f30a3774, type: 3}
+  blackBishopSprite: {fileID: 21300000, guid: d08b7fd25fc2a244e83d823c0bf6d349, type: 3}
+  whitePawnSprite: {fileID: 21300000, guid: b896c54389907f945ad70e6199b043f5, type: 3}
+  blackPawnSprite: {fileID: 21300000, guid: f3ee463091b2cd54d82ccdb33a68327b, type: 3}
 --- !u!4 &2126757683
 Transform:
   m_ObjectHideFlags: 0
