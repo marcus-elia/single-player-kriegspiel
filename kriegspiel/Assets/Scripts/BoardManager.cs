@@ -5,17 +5,22 @@ using UnityEngine;
 public class BoardManager : MonoBehaviour
 {
     public const int CHESSBOARD_SIZE = 8;
+
+    // This array only stores the spaces for drawing the board itself. Doesn't store game data.
     private GameObject[,] spaces = new GameObject[CHESSBOARD_SIZE, CHESSBOARD_SIZE];
     public Texture2D blackSquareTex;
     public Texture2D whiteSquareTex;
-    //public Texture2D whiteRookTex;
-    public Sprite whiteRookSprite;
 
-    private List<GameObject> pieces;
+    public Sprite whiteRookSprite;
+    public Sprite blackRookSprite;
+
+    private List<GameObject> playerPieces;
+    private Piece[,] masterBoard = new Piece[CHESSBOARD_SIZE, CHESSBOARD_SIZE];
 
     // Start is called before the first frame update
     void Start()
     {
+        // Put the black and white spaces on the board
         for(int i = 0; i < CHESSBOARD_SIZE; i++)
         {
             for(int j = 0; j < CHESSBOARD_SIZE; j++)
@@ -27,11 +32,13 @@ public class BoardManager : MonoBehaviour
             }
         }
 
-        GameObject testRook = new GameObject();
-        testRook.AddComponent<Piece>();
-        testRook.GetComponent<Piece>().SetSprite(whiteRookSprite);
-        testRook.GetComponent<Piece>().SetBoardPosition(0, 0);
-        pieces.Add(testRook);
+        // Set up the pieces
+        GameObject whiteRook1 = new GameObject();
+        whiteRook1.AddComponent<Piece>();
+        whiteRook1.GetComponent<Piece>().SetSprite(whiteRookSprite);
+        whiteRook1.GetComponent<Piece>().SetBoardPosition(0, 0);
+        masterBoard[0, 0] = whiteRook1.GetComponent<Piece>();
+        playerPieces.Add(whiteRook1);
     }
 
     // Update is called once per frame
