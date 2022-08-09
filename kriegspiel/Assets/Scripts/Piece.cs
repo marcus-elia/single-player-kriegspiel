@@ -38,7 +38,7 @@ public abstract class Piece : MonoBehaviour
     public void SetBoardPosition(int i, int j)
     {
         boardPosition = new BoardPosition(i, j);
-        transform.position = new Vector2(i, j);
+        transform.position = new Vector2(i + 0.5f, j + 0.5f);
     }
     public void SetTeam(Team newTeam)
     {

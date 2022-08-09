@@ -6,6 +6,8 @@ public class BoardManager : MonoBehaviour
 {
     public const int CHESSBOARD_SIZE = 8;
 
+    public MouseManager mouseManager;
+
     // This array only stores the spaces for drawing the board itself. Doesn't store game data.
     private GameObject[,] spaces = new GameObject[CHESSBOARD_SIZE, CHESSBOARD_SIZE];
     public Texture2D blackSquareTex;
@@ -24,7 +26,7 @@ public class BoardManager : MonoBehaviour
     public Sprite whitePawnSprite;
     public Sprite blackPawnSprite;
 
-    private List<GameObject> playerPieces;
+    private List<GameObject> playerPieces = new List<GameObject>();
     private Piece[,] masterBoard = new Piece[CHESSBOARD_SIZE, CHESSBOARD_SIZE];
 
     // Start is called before the first frame update
@@ -37,23 +39,38 @@ public class BoardManager : MonoBehaviour
             {
                 spaces[i, j] = new GameObject();
                 spaces[i, j].AddComponent<BoardSpace>();
-                spaces[i, j].transform.position = new Vector2(i, j);
+                spaces[i, j].transform.position = new Vector2(i + 0.5f, j + 0.5f);
                 spaces[i, j].GetComponent<BoardSpace>().SetTexture((i + j) % 2 == 0 ? blackSquareTex : whiteSquareTex);
             }
         }
 
         // Set up the pieces
         GameObject whiteRook1 = new GameObject();
-        whiteRook1.AddComponent<Piece>();
-        whiteRook1.GetComponent<Piece>().SetSprite(whiteRookSprite);
-        whiteRook1.GetComponent<Piece>().SetBoardPosition(0, 0);
-        masterBoard[0, 0] = whiteRook1.GetComponent<Piece>();
+        whiteRook1.AddComponent<Rook>();
+        whiteRook1.GetComponent<Rook>().SetSprite(whiteRookSprite);
+        whiteRook1.GetComponent<Rook>().SetBoardPosition(0, 0);
+        masterBoard[0, 0] = whiteRook1.GetComponent<Rook>();
         playerPieces.Add(whiteRook1);
+
+        // Initialize other components
+        mouseManager.SetBoardManager(this);
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    // =============================================
+    //               Get Board Info
+    // =============================================
+    public bool IsPlayerPieceThere(BoardPosition bp)
+    {
+        return masterBoard[bp.i_, bp.j_] != null && masterBoard[bp.i_, bp.j_].GetTeam() == Team.Player;
+    }
+    public bool IsComputerPieceThere(BoardPosition bp)
+    {
+        return masterBoard[bp.i_, bp.j_] != null && masterBoard[bp.i_, bp.j_].GetTeam() == Team.Computer;
     }
 }
