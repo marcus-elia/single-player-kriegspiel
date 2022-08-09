@@ -78,5 +78,10 @@ public abstract class Piece : MonoBehaviour
 
     }
 
+    // The set of spaces the Piece could move to or is protecting (including spaces with teammates)
+    public abstract List<BoardPosition> GetSightSpaces(Piece[,] currentBoard);
+    // The set of spaces the Piece could actually move to
     public abstract List<BoardPosition> GetReachableMoveSpaces(Piece[,] currentBoard);
+    // Only the spaces the Piece can legally move to.
+    public abstract List<BoardPosition> GetLegalMoveSpaces(Piece[,] currentBoard);
 }
