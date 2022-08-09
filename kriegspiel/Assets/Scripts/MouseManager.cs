@@ -33,9 +33,15 @@ public class MouseManager : MonoBehaviour
             bool clickIsOnBoard = (clickedSpace.i_ >= 0 && clickedSpace.i_ < BoardManager.CHESSBOARD_SIZE &&
                                    clickedSpace.j_ >= 0 && clickedSpace.j_ < BoardManager.CHESSBOARD_SIZE);
 
-            if (spaceIsHighlighted || !clickIsOnBoard)
+            if (!clickIsOnBoard)
+            {
+                spaceIsHighlighted = false;
+                spaceHighlighter.SetActive(false);
+            }
+            else if (spaceIsHighlighted)
             {
                 // Can the piece move there?
+                boardManager_.TryMove(clickedSpace);
                 spaceIsHighlighted = false;
                 spaceHighlighter.SetActive(false);
             }
@@ -45,6 +51,7 @@ public class MouseManager : MonoBehaviour
                 if(this.boardManager_.IsPlayerPieceThere(clickedSpace))
                 {
                     highlightedSpace_ = clickedSpace;
+                    boardManager_.SetSelectedPiece(clickedSpace);
                     spaceIsHighlighted = true;
                     spaceHighlighter.SetActive(true);
                     spaceHighlighter.transform.position = new Vector3(highlightedSpace_.i_ + 0.5f, highlightedSpace_.j_ + 0.5f, -1f);

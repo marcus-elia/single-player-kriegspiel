@@ -11,6 +11,11 @@ public struct BoardPosition
         i_ = i;
         j_ = j;
     }
+
+    public bool Equals(BoardPosition other)
+    {
+        return i_ == other.i_ && j_ == other.j_;
+    }
 }
 
 public enum Team { Player, Computer };
@@ -34,6 +39,7 @@ public abstract class Piece : MonoBehaviour
     {
         spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
         gameObject.GetComponent<SpriteRenderer>().sprite = inputSprite;
+        gameObject.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
     }
     public void SetBoardPosition(int i, int j)
     {
@@ -45,13 +51,25 @@ public abstract class Piece : MonoBehaviour
         team = newTeam;
     }
 
+    // =========================================
+    //        Basic Getters and Stuff
+    // =========================================
     public Team GetTeam()
     {
         return team;
     }
+    public BoardPosition GetBoardPosition()
+    {
+        return boardPosition;
+    }
     public bool IsTeammate(Piece p)
     {
         return team == p.GetTeam();
+    }
+
+    public void MoveToSpace(BoardPosition newPosition)
+    {
+        this.SetBoardPosition(newPosition.i_, newPosition.j_);
     }
 
     // Update is called once per frame
