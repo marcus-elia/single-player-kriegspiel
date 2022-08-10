@@ -69,34 +69,4 @@ public class Rook : Piece
 
         return spaces;
     }
-
-    public override List<BoardPosition> GetReachableMoveSpaces(Piece[,] currentBoard)
-    {
-        List<BoardPosition> sightSpaces = this.GetSightSpaces(currentBoard);
-        List<BoardPosition> reachableSpaces = new List<BoardPosition>();
-        foreach(BoardPosition bp in sightSpaces)
-        {
-            if(null == currentBoard[bp.i_, bp.j_] || !this.IsTeammate(currentBoard[bp.i_, bp.j_]))
-            {
-                reachableSpaces.Add(bp);
-            }
-        }
-
-        return reachableSpaces;
-    }
-
-    public override List<BoardPosition> GetLegalMoveSpaces(Piece[,] currentBoard)
-    {
-        List<BoardPosition> reachableSpaces = this.GetReachableMoveSpaces(currentBoard);
-        List<BoardPosition> legalSpaces = new List<BoardPosition>();
-        foreach (BoardPosition bp in reachableSpaces)
-        {
-            if (true)
-            {
-                legalSpaces.Add(bp);
-            }
-        }
-
-        return legalSpaces;
-    }
-}
+ }
