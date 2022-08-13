@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Rook : Piece
+public class Bishop : Piece
 {
     // Start is called before the first frame update
     void Start()
@@ -18,39 +18,16 @@ public class Rook : Piece
 
     public void Initialize()
     {
-        pieceType = PieceType.Rook;
+        pieceType = PieceType.Bishop;
     }
+
     public override List<BoardPosition> GetSightSpaces(Piece[,] currentBoard)
     {
         List<BoardPosition> spaces = new List<BoardPosition>();
-        // Up
-        int i = this.boardPosition.i_;
+        // Up right
+        int i = this.boardPosition.i_ + 1;
         int j = this.boardPosition.j_ + 1;
-        while(j < BoardManager.CHESSBOARD_SIZE)
-        {
-            spaces.Add(new BoardPosition(i, j));
-            if (null != currentBoard[i, j])
-            {
-                break;
-            }
-            j++;
-        }
-        // Down
-        i = this.boardPosition.i_;
-        j = this.boardPosition.j_ - 1;
-        while (j >= 0)
-        {
-            spaces.Add(new BoardPosition(i, j));
-            if (null != currentBoard[i, j])
-            {
-                break;
-            }
-            j--;
-        }
-        // Left
-        i = this.boardPosition.i_ + 1;
-        j = this.boardPosition.j_;
-        while (i < BoardManager.CHESSBOARD_SIZE)
+        while (i < BoardManager.CHESSBOARD_SIZE && j < BoardManager.CHESSBOARD_SIZE)
         {
             spaces.Add(new BoardPosition(i, j));
             if (null != currentBoard[i, j])
@@ -58,11 +35,25 @@ public class Rook : Piece
                 break;
             }
             i++;
+            j++;
         }
-        // Right
+        // Down right
+        i = this.boardPosition.i_ + 1;
+        j = this.boardPosition.j_ - 1;
+        while (i < BoardManager.CHESSBOARD_SIZE && j >= 0)
+        {
+            spaces.Add(new BoardPosition(i, j));
+            if (null != currentBoard[i, j])
+            {
+                break;
+            }
+            i++;
+            j--;
+        }
+        // Down left
         i = this.boardPosition.i_ - 1;
-        j = this.boardPosition.j_;
-        while (i >= 0)
+        j = this.boardPosition.j_ - 1;
+        while (i >= 0 && j >= 0)
         {
             spaces.Add(new BoardPosition(i, j));
             if (null != currentBoard[i, j])
@@ -70,8 +61,22 @@ public class Rook : Piece
                 break;
             }
             i--;
+            j--;
+        }
+        // Up left
+        i = this.boardPosition.i_ - 1;
+        j = this.boardPosition.j_ + 1;
+        while (i >= 0 && j < BoardManager.CHESSBOARD_SIZE)
+        {
+            spaces.Add(new BoardPosition(i, j));
+            if (null != currentBoard[i, j])
+            {
+                break;
+            }
+            i--;
+            j++;
         }
 
         return spaces;
     }
- }
+}

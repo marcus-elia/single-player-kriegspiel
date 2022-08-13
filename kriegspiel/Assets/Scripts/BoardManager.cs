@@ -27,6 +27,7 @@ public class BoardManager : MonoBehaviour
     public Sprite blackPawnSprite;
 
     private List<GameObject> playerPieces_ = new List<GameObject>();
+    private List<GameObject> computerPieces_ = new List<GameObject>();
     private Piece[,] masterBoard_ = new Piece[CHESSBOARD_SIZE, CHESSBOARD_SIZE];
     private Piece selectedPiece_ = null;
 
@@ -46,26 +47,94 @@ public class BoardManager : MonoBehaviour
         }
 
         // Set up the pieces
+        // Rooks
         for(int i = 0; i < 8; i += 7)
         {
-            for(int j = 0; j < 8; j += 7)
+            for (int j = 0; j < 8; j += 7)
             {
                 GameObject newRook = new GameObject();
                 newRook.AddComponent<Rook>();
                 newRook.GetComponent<Rook>().SetSprite(j == 0 ? whiteRookSprite : blackRookSprite);
                 newRook.GetComponent<Rook>().SetTeam(j == 0 ? Team.Player : Team.Computer);
                 newRook.GetComponent<Rook>().SetBoardPosition(i, j);
+                newRook.GetComponent<Rook>().Initialize();
                 masterBoard_[i, j] = newRook.GetComponent<Rook>();
-                if(j == 0)
+                if (j == 0)
                 {
                     playerPieces_.Add(newRook);
                 }
+                else
+                {
+                    computerPieces_.Add(newRook);
+                }
             }
         }
-        
+        // Bishops
+        for (int i = 2; i < 6; i += 3)
+        {
+            for (int j = 0; j < 8; j += 7)
+            {
+                GameObject newBishop = new GameObject();
+                newBishop.AddComponent<Bishop>();
+                newBishop.GetComponent<Bishop>().SetSprite(j == 0 ? whiteBishopSprite : blackBishopSprite);
+                newBishop.GetComponent<Bishop>().SetTeam(j == 0 ? Team.Player : Team.Computer);
+                newBishop.GetComponent<Bishop>().SetBoardPosition(i, j);
+                newBishop.GetComponent<Bishop>().Initialize();
+                masterBoard_[i, j] = newBishop.GetComponent<Bishop>();
+                if (j == 0)
+                {
+                    playerPieces_.Add(newBishop);
+                }
+                else
+                {
+                    computerPieces_.Add(newBishop);
+                }
+            }
+        }
+        // Kings
+        for (int j = 0; j < 8; j += 7)
+        {
+            GameObject newKing = new GameObject();
+            newKing.AddComponent<King>();
+            newKing.GetComponent<King>().SetSprite(j == 0 ? whiteKingSprite : blackKingSprite);
+            newKing.GetComponent<King>().SetTeam(j == 0 ? Team.Player : Team.Computer);
+            newKing.GetComponent<King>().SetBoardPosition(4, j);
+            newKing.GetComponent<King>().Initialize();
+            masterBoard_[4, j] = newKing.GetComponent<King>();
+            if (j == 0)
+            {
+                playerPieces_.Add(newKing);
+            }
+            else
+            {
+                computerPieces_.Add(newKing);
+            }
+        }
+        // Queens
+        for (int j = 0; j < 8; j += 7)
+        {
+            GameObject newQueen = new GameObject();
+            newQueen.AddComponent<Queen>();
+            newQueen.GetComponent<Queen>().SetSprite(j == 0 ? whiteQueenSprite : blackQueenSprite);
+            newQueen.GetComponent<Queen>().SetTeam(j == 0 ? Team.Player : Team.Computer);
+            newQueen.GetComponent<Queen>().SetBoardPosition(3, j);
+            newQueen.GetComponent<Queen>().Initialize();
+            masterBoard_[3, j] = newQueen.GetComponent<Queen>();
+            if (j == 0)
+            {
+                playerPieces_.Add(newQueen);
+            }
+            else
+            {
+                computerPieces_.Add(newQueen);
+            }
+        }
 
         // Initialize other components
         mouseManager.SetBoardManager(this);
+
+        // Have all pieces calculate legal moves to start
+        this.ResetLegalMoveSpaces();
     }
 
     // Update is called once per frame
@@ -95,13 +164,22 @@ public class BoardManager : MonoBehaviour
         {
             Debug.LogError("Can't try to move when no piece is selected.");
         }
-        List<BoardPosition> reachableMoveSpaces = selectedPiece_.GetReachableMoveSpaces(masterBoard_);
-        if(reachableMoveSpaces.Contains(selectedSpace))
+        List<BoardPosition> legalMoveSpaces = selectedPiece_.GetLegalMoveSpaces();
+        if(legalMoveSpaces.Contains(selectedSpace))
         {
+            if (null != masterBoard_[selectedSpace.i_, selectedSpace.j_])
+            {
+                if(masterBoard_[selectedSpace.i_, selectedSpace.j_].GetTeam() == selectedPiece_.GetTeam())
+                {
+                    Debug.LogError("Trying to capture a teammate. Big problem.");
+                }
+
+            }
             BoardPosition previousLocation = selectedPiece_.GetBoardPosition();
             masterBoard_[previousLocation.i_, previousLocation.j_] = null;
             selectedPiece_.MoveToSpace(selectedSpace);
-            masterBoard_[selectedSpace.i_, selectedSpace.j_] = selectedPiece_;            
+            masterBoard_[selectedSpace.i_, selectedSpace.j_] = selectedPiece_;
+            this.ResetLegalMoveSpaces();
         }
         else
         {
@@ -121,5 +199,46 @@ public class BoardManager : MonoBehaviour
             Debug.LogError("Trying to set selected piece when there already is a selected piece.");
         }
         selectedPiece_ = p;
+    }
+
+    // Iterate over all pieces and updates where they can and can't move
+    public void ResetLegalMoveSpaces()
+    {
+        for (int i = 0; i < BoardManager.CHESSBOARD_SIZE; i++)
+        {
+            for (int j = 0; j < BoardManager.CHESSBOARD_SIZE; j++)
+            {
+                if (null == masterBoard_[i, j])
+                {
+                    continue;
+                }
+                Piece currentPiece = masterBoard_[i, j];
+                // Check all of the spaces the piece can physically get to
+                List<BoardPosition> reachableMoveSpaces = currentPiece.GetReachableMoveSpaces(masterBoard_);
+                List<BoardPosition> legalMoveSpaces = new List<BoardPosition>();
+                foreach (BoardPosition bp in reachableMoveSpaces)
+                {
+                    // Temporarily move the piece there
+                    Piece capturedPiece = masterBoard_[bp.i_, bp.j_];
+                    BoardPosition previousLocation = currentPiece.GetBoardPosition();
+                    masterBoard_[previousLocation.i_, previousLocation.j_] = null;
+                    currentPiece.MoveToSpace(bp);
+                    masterBoard_[bp.i_, bp.j_] = currentPiece;
+
+                    // Does it put its own team in check?
+                    if (0 == BoardEvaluator.GetCheckingLocations(masterBoard_, currentPiece.GetTeam()).Count)
+                    {
+                        legalMoveSpaces.Add(bp);
+                    }
+
+                    // Put the piece back
+                    masterBoard_[previousLocation.i_, previousLocation.j_] = currentPiece;
+                    currentPiece.MoveToSpace(previousLocation);
+                    masterBoard_[bp.i_, bp.j_] = capturedPiece;
+                }
+
+                currentPiece.SetLegalMoveSpaces(legalMoveSpaces);
+            }
+        }
     }
 }

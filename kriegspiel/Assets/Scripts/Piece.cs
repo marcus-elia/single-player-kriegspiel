@@ -19,12 +19,14 @@ public struct BoardPosition
 }
 
 public enum Team { Player, Computer };
+public enum PieceType { King, Queen, Rook, Bishop, Knight, Pawn };
 
 public abstract class Piece : MonoBehaviour
 {
     protected BoardPosition boardPosition;
-    private SpriteRenderer spriteRenderer;
     protected Team team;
+    protected PieceType pieceType;
+    protected List<BoardPosition> legalMoveSpaces_;
 
     // Start is called before the first frame update
     void Start()
@@ -37,7 +39,7 @@ public abstract class Piece : MonoBehaviour
     // =======================================
     public void SetSprite(Sprite inputSprite)
     {
-        spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
+        gameObject.AddComponent<SpriteRenderer>();
         gameObject.GetComponent<SpriteRenderer>().sprite = inputSprite;
         gameObject.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
     }
@@ -62,9 +64,21 @@ public abstract class Piece : MonoBehaviour
     {
         return boardPosition;
     }
+    public PieceType GetPieceType()
+    {
+        return pieceType;
+    }
+    public bool IsTeammate(Team t)
+    {
+        return team == t;
+    }
     public bool IsTeammate(Piece p)
     {
-        return team == p.GetTeam();
+        return this.IsTeammate(p.GetTeam());
+    }
+    public bool IsTargetKing(Team team)
+    {
+        return this.team == team && PieceType.King == this.pieceType;
     }
 
     public void MoveToSpace(BoardPosition newPosition)
@@ -97,18 +111,34 @@ public abstract class Piece : MonoBehaviour
     }
 
     // Only the spaces the Piece can legally move to.
-    public List<BoardPosition> GetLegalMoveSpaces(Piece[,] currentBoard)
+    public List<BoardPosition> GetLegalMoveSpaces()
     {
-        List<BoardPosition> reachableSpaces = this.GetReachableMoveSpaces(currentBoard);
-        List<BoardPosition> legalSpaces = new List<BoardPosition>();
-        foreach (BoardPosition bp in reachableSpaces)
-        {
-            if (true)
-            {
-                legalSpaces.Add(bp);
-            }
-        }
+        return legalMoveSpaces_;
+    }
+    public void SetLegalMoveSpaces(List<BoardPosition> legalMoveSpaces)
+    {
+        legalMoveSpaces_ = legalMoveSpaces;
+    }
 
-        return legalSpaces;
+    public static string PieceTypeToString(PieceType pt)
+    {
+        switch(pt)
+        {
+            case PieceType.King:   return "King";
+            case PieceType.Queen:  return "Queen";
+            case PieceType.Rook:   return "Rook";
+            case PieceType.Bishop: return "Bishop";
+            case PieceType.Knight: return "Knight";
+            case PieceType.Pawn:   return "Pawn";
+        }
+        return "Unknown";
+    }
+
+    public override string ToString()
+    {
+        string str = (team == Team.Player) ? "Player " : "Computer ";
+        str += Piece.PieceTypeToString(pieceType) + " at ";
+        str += boardPosition.i_ + ", " + boardPosition.j_;
+        return str;
     }
 }
