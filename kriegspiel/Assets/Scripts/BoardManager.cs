@@ -173,13 +173,18 @@ public class BoardManager : MonoBehaviour
                 {
                     Debug.LogError("Trying to capture a teammate. Big problem.");
                 }
-
+                masterBoard_[selectedSpace.i_, selectedSpace.j_].gameObject.SetActive(false);
+                Debug.Log("player just captured a piece");
             }
             BoardPosition previousLocation = selectedPiece_.GetBoardPosition();
             masterBoard_[previousLocation.i_, previousLocation.j_] = null;
             selectedPiece_.MoveToSpace(selectedSpace);
             masterBoard_[selectedSpace.i_, selectedSpace.j_] = selectedPiece_;
             this.ResetLegalMoveSpaces();
+
+            // Now have the computer move
+            this.PerformComputerMove();
+            Debug.Log("computer moved");
         }
         else
         {
@@ -187,6 +192,21 @@ public class BoardManager : MonoBehaviour
         }
         selectedPiece_ = null;
     }
+
+    public void PerformComputerMove()
+    {
+        MoveInfo move = AIMover.ChooseComputerMove(masterBoard_);
+        Piece p = move.movingPiece;
+        if (null != move.capturedPiece)
+        {
+            move.capturedPiece.gameObject.SetActive(false);
+        }
+        masterBoard_[move.moveToLocation.i_, move.moveToLocation.j_] = p;
+        masterBoard_[move.moveFromLocation.i_, move.moveFromLocation.j_] = null;
+        p.MoveToSpace(move.moveToLocation);
+        this.ResetLegalMoveSpaces();
+    }
+
     public void SetSelectedPiece(BoardPosition selectedSpace)
     {
         Piece p = masterBoard_[selectedSpace.i_, selectedSpace.j_];
