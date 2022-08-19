@@ -129,6 +129,50 @@ public class BoardManager : MonoBehaviour
                 computerPieces_.Add(newQueen);
             }
         }
+        // Knights
+        for (int i = 1; i < 7; i += 5)
+        {
+            for (int j = 0; j < 8; j += 7)
+            {
+                GameObject newKnight = new GameObject();
+                newKnight.AddComponent<Knight>();
+                newKnight.GetComponent<Knight>().SetSprite(j == 0 ? whiteKnightSprite : blackKnightSprite);
+                newKnight.GetComponent<Knight>().SetTeam(j == 0 ? Team.Player : Team.Computer);
+                newKnight.GetComponent<Knight>().SetBoardPosition(i, j);
+                newKnight.GetComponent<Knight>().Initialize();
+                masterBoard_[i, j] = newKnight.GetComponent<Knight>();
+                if (j == 0)
+                {
+                    playerPieces_.Add(newKnight);
+                }
+                else
+                {
+                    computerPieces_.Add(newKnight);
+                }
+            }
+        }
+        // Pawns
+        for (int i = 0; i < BoardManager.CHESSBOARD_SIZE; i++)
+        {
+            for (int j = 1; j < 7; j += 5)
+            {
+                GameObject newPawn = new GameObject();
+                newPawn.AddComponent<Pawn>();
+                newPawn.GetComponent<Pawn>().SetSprite(j == 1 ? whitePawnSprite : blackPawnSprite);
+                newPawn.GetComponent<Pawn>().SetTeam(j == 1 ? Team.Player : Team.Computer);
+                newPawn.GetComponent<Pawn>().SetBoardPosition(i, j);
+                newPawn.GetComponent<Pawn>().Initialize();
+                masterBoard_[i, j] = newPawn.GetComponent<Pawn>();
+                if (j == 1)
+                {
+                    playerPieces_.Add(newPawn);
+                }
+                else
+                {
+                    computerPieces_.Add(newPawn);
+                }
+            }
+        }
 
         // Initialize other components
         mouseManager.SetBoardManager(this);
