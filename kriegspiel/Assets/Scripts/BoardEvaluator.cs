@@ -69,4 +69,41 @@ public class BoardEvaluator : MonoBehaviour
     {
         return BoardEvaluator.GetCheckingLocations(board, team).Count > 0;
     }
+
+
+    public static List<Piece> GetMovablePieces(Piece[,] board, Team team)
+    {
+        List<Piece> movablePieces = new List<Piece>();
+        for (int i = 0; i < BoardManager.CHESSBOARD_SIZE; i++)
+        {
+            for (int j = 0; j < BoardManager.CHESSBOARD_SIZE; j++)
+            {
+                if (null != board[i, j] && board[i, j].GetTeam() == Team.Computer)
+                {
+                    if (board[i, j].GetLegalMoveSpaces().Count > 0)
+                    {
+                        movablePieces.Add(board[i, j]);
+                    }
+                }
+            }
+        }
+
+        return movablePieces;
+    }
+
+    public static bool HasNoLegalMoves(Piece[,] board, Team team)
+    {
+        return 0 == GetMovablePieces(board, team).Count;
+    }
+
+    public static bool IsCheckmate(Piece[,] board, Team team)
+    {
+        return IsInCheck(board, team) && HasNoLegalMoves(board, team);
+    }
+
+    public static bool IsStalemate(Piece[,] board)
+    {
+        return HasNoLegalMoves(board, Team.Player) && HasNoLegalMoves(board, Team.Computer) &&
+               !IsInCheck(board, Team.Player) && !IsInCheck(board, Team.Computer);
+    }
 }

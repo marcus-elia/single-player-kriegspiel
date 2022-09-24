@@ -40,20 +40,7 @@ public class AIMover : MonoBehaviour
 
     public static MoveInfo ChooseComputerMove(Piece[,] board)
     {
-        List<Piece> movablePieces = new List<Piece>();
-        for (int i = 0; i < BoardManager.CHESSBOARD_SIZE; i++)
-        {
-            for (int j = 0; j < BoardManager.CHESSBOARD_SIZE; j++)
-            {
-                if (null != board[i, j] && board[i, j].GetTeam() == Team.Computer)
-                {
-                    if (board[i, j].GetLegalMoveSpaces().Count > 0)
-                    {
-                        movablePieces.Add(board[i, j]);
-                    }
-                }
-            }
-        }
+        List<Piece> movablePieces = BoardEvaluator.GetMovablePieces(board, Team.Computer);
 
         // Choose random piece that can move, and a random space for that piece
         int randomPieceIndex = Random.Range(0, movablePieces.Count);
