@@ -19,6 +19,7 @@ public struct BoardPosition
 }
 
 public enum Team { Player, Computer };
+
 public enum PieceType { King, Queen, Rook, Bishop, Knight, Pawn };
 
 public abstract class Piece : MonoBehaviour
@@ -27,6 +28,7 @@ public abstract class Piece : MonoBehaviour
     protected Team team;
     protected PieceType pieceType;
     protected List<BoardPosition> legalMoveSpaces_;
+    protected bool hasMoved_ = false;
 
     // Start is called before the first frame update
     void Start()
@@ -68,6 +70,10 @@ public abstract class Piece : MonoBehaviour
     {
         return pieceType;
     }
+    public bool GetHasMoved()
+    {
+        return hasMoved_;
+    }
     public bool IsTeammate(Team t)
     {
         return team == t;
@@ -81,8 +87,14 @@ public abstract class Piece : MonoBehaviour
         return this.team == team && PieceType.King == this.pieceType;
     }
 
-    public void MoveToSpace(BoardPosition newPosition)
+    // Move the Piece to the new position. But the move might be just testing out
+    // legal locations, so specify realMove = true when it is actually a move.
+    public void MoveToSpace(BoardPosition newPosition, bool realMove=false)
     {
+        if(realMove)
+        {
+            this.hasMoved_ = true;
+        }
         this.SetBoardPosition(newPosition.i_, newPosition.j_);
     }
 
@@ -140,5 +152,10 @@ public abstract class Piece : MonoBehaviour
         str += Piece.PieceTypeToString(pieceType) + " at ";
         str += boardPosition.i_ + ", " + boardPosition.j_;
         return str;
+    }
+
+    public static Team GetOtherTeam(Team team)
+    {
+        return team == Team.Player ? Team.Computer : Team.Player;
     }
 }

@@ -16,11 +16,32 @@ public class BoardEvaluator : MonoBehaviour
         
     }
 
-    // Return the locations of opposing pieces that can reach the king
+    // Return the locations of opposing pieces that can reach the target space
+    public static List<BoardPosition> GetAttackingLocations(Piece[,] board, Team attackingTeam, BoardPosition targetLoc)
+    {
+        List<BoardPosition> attackingFromLocations = new List<BoardPosition>();
+        // Iterate over all opposing pieces to see if any of them can reach the king
+        for (int i = 0; i < BoardManager.CHESSBOARD_SIZE; i++)
+        {
+            for (int j = 0; j < BoardManager.CHESSBOARD_SIZE; j++)
+            {
+                if (null != board[i, j] && board[i, j].GetTeam() == attackingTeam)
+                {
+                    List<BoardPosition> attackedSpaces = board[i, j].GetReachableMoveSpaces(board);
+                    if (attackedSpaces.Contains(targetLoc))
+                    {
+                        attackingFromLocations.Add(new BoardPosition(i, j));
+                    }
+                }
+            }
+        }
+
+        return attackingFromLocations;
+    }
+
+    // Return the locations of opposing pieces that can reach Team's king
     public static List<BoardPosition> GetCheckingLocations(Piece[,] board, Team team)
     {
-        List<BoardPosition> checkingLocations = new List<BoardPosition>();
-
         // Iterate through to find the king
         BoardPosition kingLocation = new BoardPosition(-1, -1);
         bool kingFound = false;
@@ -41,22 +62,11 @@ public class BoardEvaluator : MonoBehaviour
             Debug.LogError("There is no king.");
         }
 
-        // Iterate over all opposing pieces to see if any of them can reach the king
-        for (int i = 0; i < BoardManager.CHESSBOARD_SIZE; i++)
-        {
-            for (int j = 0; j < BoardManager.CHESSBOARD_SIZE; j++)
-            {
-                if (null != board[i, j] && !board[i, j].IsTeammate(team))
-                {
-                    List<BoardPosition> attackedSpaces = board[i, j].GetReachableMoveSpaces(board);
-                    if (attackedSpaces.Contains(kingLocation))
-                    {
-                        checkingLocations.Add(new BoardPosition(i, j));
-                    }
-                }
-            }
-        }
+        return GetAttackingLocations(board, Piece.GetOtherTeam(team), kingLocation);
+    }
 
-        return checkingLocations;
+    public static bool IsInCheck(Piece[,] board, Team team)
+    {
+        return BoardEvaluator.GetCheckingLocations(board, team).Count > 0;
     }
 }

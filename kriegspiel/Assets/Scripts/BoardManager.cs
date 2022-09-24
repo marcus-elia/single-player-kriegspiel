@@ -209,6 +209,7 @@ public class BoardManager : MonoBehaviour
             Debug.LogError("Can't try to move when no piece is selected.");
         }
         List<BoardPosition> legalMoveSpaces = selectedPiece_.GetLegalMoveSpaces();
+        // Check if the piece can move there normally
         if(legalMoveSpaces.Contains(selectedSpace))
         {
             if (null != masterBoard_[selectedSpace.i_, selectedSpace.j_])
@@ -222,13 +223,72 @@ public class BoardManager : MonoBehaviour
             }
             BoardPosition previousLocation = selectedPiece_.GetBoardPosition();
             masterBoard_[previousLocation.i_, previousLocation.j_] = null;
-            selectedPiece_.MoveToSpace(selectedSpace);
+            selectedPiece_.MoveToSpace(selectedSpace, true);
             masterBoard_[selectedSpace.i_, selectedSpace.j_] = selectedPiece_;
             this.ResetLegalMoveSpaces();
 
             // Now have the computer move
             this.PerformComputerMove();
             Debug.Log("computer moved");
+        }
+        // Then check if it's castling
+        else if(PieceType.King == selectedPiece_.GetPieceType() && !selectedPiece_.GetHasMoved())
+        {
+            // Kingside
+            if(6 == selectedSpace.i_ && 0 == selectedSpace.j_)
+            {
+                bool clearPath = (masterBoard_[5, 0] == null && masterBoard_[6, 0] == null);
+                bool rookPresent = (masterBoard_[7, 0] != null && !masterBoard_[7, 0].GetHasMoved());
+                bool notInCheck = !BoardEvaluator.IsInCheck(masterBoard_, Team.Player);
+                bool notThroughCheck = BoardEvaluator.GetAttackingLocations(masterBoard_, Team.Computer, new BoardPosition(5, 0)).Count == 0 &&
+                                       BoardEvaluator.GetAttackingLocations(masterBoard_, Team.Computer, new BoardPosition(6, 0)).Count == 0;
+                
+                // Do the kingside castling
+                if (clearPath && rookPresent && notInCheck && notThroughCheck)
+                {
+                    // Move the king
+                    masterBoard_[6, 0] = masterBoard_[4, 0];
+                    masterBoard_[6, 0].MoveToSpace(new BoardPosition(6, 0), true);
+                    // Move the rook
+                    masterBoard_[5, 0] = masterBoard_[7, 0];
+                    masterBoard_[5, 0].MoveToSpace(new BoardPosition(5, 0), true);
+                    // Clear both spaces
+                    masterBoard_[4, 0] = null;
+                    masterBoard_[7, 0] = null;
+                    this.ResetLegalMoveSpaces();
+
+                    // Now have the computer move
+                    this.PerformComputerMove();
+                    Debug.Log("computer moved");
+                }
+            }
+            // Queenside
+            if (2 == selectedSpace.i_ && 0 == selectedSpace.j_)
+            {
+                bool clearPath = (masterBoard_[3, 0] == null && masterBoard_[2, 0] == null);
+                bool rookPresent = (masterBoard_[0, 0] != null && !masterBoard_[0, 0].GetHasMoved());
+                bool notInCheck = !BoardEvaluator.IsInCheck(masterBoard_, Team.Player);
+                bool notThroughCheck = BoardEvaluator.GetAttackingLocations(masterBoard_, Team.Computer, new BoardPosition(3, 0)).Count == 0 &&
+                                       BoardEvaluator.GetAttackingLocations(masterBoard_, Team.Computer, new BoardPosition(2, 0)).Count == 0;
+                // Do the queenside castling
+                if (clearPath && rookPresent && notInCheck && notThroughCheck)
+                {
+                    // Move the king
+                    masterBoard_[2, 0] = masterBoard_[4, 0];
+                    masterBoard_[2, 0].MoveToSpace(new BoardPosition(2, 0), true);
+                    // Move the rook
+                    masterBoard_[3, 0] = masterBoard_[0, 0];
+                    masterBoard_[3, 0].MoveToSpace(new BoardPosition(3, 0), true);
+                    // Clear both spaces
+                    masterBoard_[4, 0] = null;
+                    masterBoard_[0, 0] = null;
+                    this.ResetLegalMoveSpaces();
+
+                    // Now have the computer move
+                    this.PerformComputerMove();
+                    Debug.Log("computer moved");
+                }
+            }
         }
         else
         {
@@ -247,7 +307,7 @@ public class BoardManager : MonoBehaviour
         }
         masterBoard_[move.moveToLocation.i_, move.moveToLocation.j_] = p;
         masterBoard_[move.moveFromLocation.i_, move.moveFromLocation.j_] = null;
-        p.MoveToSpace(move.moveToLocation);
+        p.MoveToSpace(move.moveToLocation, true);
         this.ResetLegalMoveSpaces();
     }
 
@@ -290,7 +350,7 @@ public class BoardManager : MonoBehaviour
                     masterBoard_[bp.i_, bp.j_] = currentPiece;
 
                     // Does it put its own team in check?
-                    if (0 == BoardEvaluator.GetCheckingLocations(masterBoard_, currentPiece.GetTeam()).Count)
+                    if (!BoardEvaluator.IsInCheck(masterBoard_, currentPiece.GetTeam()))
                     {
                         legalMoveSpaces.Add(bp);
                     }
