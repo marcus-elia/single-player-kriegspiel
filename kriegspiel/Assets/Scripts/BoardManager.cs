@@ -225,6 +225,7 @@ public class BoardManager : MonoBehaviour
             masterBoard_[previousLocation.i_, previousLocation.j_] = null;
             selectedPiece_.MoveToSpace(selectedSpace, true);
             masterBoard_[selectedSpace.i_, selectedSpace.j_] = selectedPiece_;
+            this.PromotePawns();
             this.ResetLegalMoveSpaces();
 
             // Now have the computer move
@@ -255,6 +256,7 @@ public class BoardManager : MonoBehaviour
                     // Clear both spaces
                     masterBoard_[4, 0] = null;
                     masterBoard_[7, 0] = null;
+                    this.PromotePawns();
                     this.ResetLegalMoveSpaces();
 
                     // Now have the computer move
@@ -282,6 +284,7 @@ public class BoardManager : MonoBehaviour
                     // Clear both spaces
                     masterBoard_[4, 0] = null;
                     masterBoard_[0, 0] = null;
+                    this.PromotePawns();
                     this.ResetLegalMoveSpaces();
 
                     // Now have the computer move
@@ -308,6 +311,7 @@ public class BoardManager : MonoBehaviour
         masterBoard_[move.moveToLocation.i_, move.moveToLocation.j_] = p;
         masterBoard_[move.moveFromLocation.i_, move.moveFromLocation.j_] = null;
         p.MoveToSpace(move.moveToLocation, true);
+        this.PromotePawns();
         this.ResetLegalMoveSpaces();
     }
 
@@ -362,6 +366,41 @@ public class BoardManager : MonoBehaviour
                 }
 
                 currentPiece.SetLegalMoveSpaces(legalMoveSpaces);
+            }
+        }
+    }
+
+    public void PromotePawns()
+    {
+        for(int i = 0; i < BoardManager.CHESSBOARD_SIZE; i++)
+        {
+            // Check for player promotions
+            if (masterBoard_[i, CHESSBOARD_SIZE - 1] != null && masterBoard_[i, CHESSBOARD_SIZE - 1].GetPieceType() == PieceType.Pawn)
+            {
+                masterBoard_[i, CHESSBOARD_SIZE - 1].gameObject.SetActive(false);
+                GameObject newQueen = new GameObject();
+                newQueen.AddComponent<Queen>();
+                newQueen.GetComponent<Queen>().SetSprite(whiteQueenSprite);
+                newQueen.GetComponent<Queen>().SetTeam(Team.Player);
+                newQueen.GetComponent<Queen>().SetBoardPosition(i, CHESSBOARD_SIZE - 1);
+                newQueen.GetComponent<Queen>().Initialize();
+                masterBoard_[i, CHESSBOARD_SIZE - 1] = newQueen.GetComponent<Queen>();
+                playerPieces_.Add(newQueen);
+                this.ResetLegalMoveSpaces();
+            }
+            // Check for computer promotions
+            if (masterBoard_[i, 0] != null && masterBoard_[i, 0].GetPieceType() == PieceType.Pawn)
+            {
+                masterBoard_[i, 0].gameObject.SetActive(false);
+                GameObject newQueen = new GameObject();
+                newQueen.AddComponent<Queen>();
+                newQueen.GetComponent<Queen>().SetSprite(blackQueenSprite);
+                newQueen.GetComponent<Queen>().SetTeam(Team.Computer);
+                newQueen.GetComponent<Queen>().SetBoardPosition(i, 0);
+                newQueen.GetComponent<Queen>().Initialize();
+                masterBoard_[i, 0] = newQueen.GetComponent<Queen>();
+                computerPieces_.Add(newQueen);
+                this.ResetLegalMoveSpaces();
             }
         }
     }
